@@ -1,0 +1,33 @@
+# Primer stage: Ejecuta las pruebas
+FROM maven:3.8.4-openjdk-11 AS builder
+
+WORKDIR /app
+
+# Copia solo el archivo pom.xml al contenedor
+COPY pom.xml .
+
+# Descarga las dependencias necesarias
+RUN mvn dependency:go-offline
+
+# Copia el resto de los archivos (excluyendo los archivos en .dockerignore)
+COPY . .
+
+# Ejecuta las pruebas
+RUN mvn test
+
+# Segundo stage: Compila y ejecuta el microservicio
+FROM maven:3.8.4-openjdk-11 AS runner
+
+WORKDIR /app
+
+# Copia los archivos desde el stage anterior
+COPY --from=builder /app /app
+
+# Empaqueta la aplicación
+RUN mvn package -DskipTests
+
+# Exponer el puerto
+EXPOSE 8080
+
+# Comando para ejecutar la aplicación cuando se inicia el contenedor
+CMD ["java", "-jar", "/app/target/accenture-techhub-0.0.1-SNAPSHOT.war"]

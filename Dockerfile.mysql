@@ -1,0 +1,11 @@
+# Utiliza una imagen oficial de MySQL
+FROM mysql:latest
+
+# Variables de entorno para la configuración de la base de datos
+ENV MYSQL_DATABASE=accwe-hospital
+ENV MYSQL_ROOT_PASSWORD=root
+
+
+# Exponer el puerto de MySQLdocker build -t accenture-techhub:1.0 .
+
+EXPOSE 3306
